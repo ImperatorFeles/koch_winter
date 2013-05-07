@@ -46,25 +46,18 @@ function loop()
 {
 	drawBackground();
 
-	if (snowflakes.length < 50)
+	// add a new snowflake if we don't have enough and rng says we should
+	if (snowflakes.length < 50 && Math.random() * 100 < 2)
 	{
-		if (Math.random() * 100 < 2)
-		{
-			var loc = [Math.random() * W, -50];
-			var size = Math.random() * 40 + 10;
-			var speed = Math.random() + 0.2;
-			var rotSpeed = Math.random() * 0.1;
-			var dir = Math.random() * 2 - 1;
-			var depth = Math.floor(Math.random() * 4);
-
-			snowflakes.push(new Snowflake(loc, size, speed, rotSpeed, dir, depth));
-		}
+		addSnowflake();
 	}
+	// update the snowflakes
 	for (var i = 0; i < snowflakes.length; i ++)
 	{
 		snowflakes[i].update();
 	}
 
+	// draw the snowflakes
 	context.fillStyle = "white";
 	context.strokeStyle = "black";
 	context.lineWidth = 1;
@@ -82,12 +75,46 @@ function loop()
 	requestAnimFrame(loop);
 }
 
+/*
+ * Draws the background of the scene
+ */
 function drawBackground()
 {
-	context.fillStyle = "rgb(230, 230, 230)";
+	var gradient = context.createLinearGradient(0, 0, 0, H);
+
+	gradient.addColorStop(0.0, "#999999");
+	gradient.addColorStop(0.1, "#CCCCCC");
+	gradient.addColorStop(0.4, "#E0E0E0");
+	context.fillStyle = gradient;
 	context.fillRect(0, 0, W, H);
 }
 
+function addSnowflake()
+{
+
+	// randomize snowflake properties
+	var loc = [Math.random() * W, -50];
+	var size = Math.random() * 40 + 10;
+	var speed = Math.random() + 0.2;
+	var rotSpeed = Math.random() * 0.05 + 0.005;
+	var dir = Math.random() * 2 - 1;
+	var depth = Math.floor(generateRandomNormal() + 1.5);
+
+	// make sure depth was generated correctly
+	while (depth < 0 || depth > 4)
+	{
+		depth = Math.floor(generateRandomNormal() + 1.5);
+	}
+
+	// make flakes besides 1 more rare
+	if (depth != 1 && Math.random() * 100 < 50)
+	{
+		depth = 1;
+	}
+
+	// create the snowflake
+	snowflakes.push(new Snowflake(loc, size, speed, rotSpeed, dir, depth));
+}
 
 /**
  * Draws a Koch snowflake at the location with recursion depth 'depth'

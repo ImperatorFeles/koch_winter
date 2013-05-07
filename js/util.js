@@ -25,6 +25,20 @@ function drawLine(start, end)
 }
 
 /**
+ * Generates a random number on a normal distribution
+ */
+function generateRandomNormal()
+{
+	// two random numbers
+	var U1 = Math.random();
+	var U2 = Math.random();
+	var c1 = Math.sqrt(-2 * Math.log(U1));
+	var c2 = Math.cos(2 * Math.PI * U2);
+
+	return c1 * c2;
+}
+
+/**
  * Returns a random color
  */
 function randomColor()
