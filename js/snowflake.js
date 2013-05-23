@@ -6,12 +6,17 @@ function Snowflake(startLoc, size, speed, rotSpeed, dir, depth)
 {
 	this.loc = startLoc;
 	this.size = size;
+	this.velocity = [0.0, 0.0];
 	this.speed = speed;
 	this.rotSpeed = rotSpeed;
 	this.dir = dir;
 	this.theta = 0;
 	this.depth = depth;
-	this.points = this.generateSnowflake();
+	this.offsets = this.generateSnowflake();
+	this.velocity[0] = Math.sin(this.theta) * this.dir;
+	this.velocity[1] = this.speed;
+	this.wind = [0, 0];
+	this.damping = 0.01; // damping factor so wind dies down
 }
 
 /*
@@ -21,16 +26,34 @@ function Snowflake(startLoc, size, speed, rotSpeed, dir, depth)
 Snowflake.prototype.update = function()
 {
 	// update position
-	this.loc[0] += Math.sin(this.theta) * this.dir;
-	this.loc[1] += this.speed;
+	this.loc[0] += this.velocity[0] + this.wind[0];
+	this.loc[1] += this.velocity[1] + this.wind[1];
+
+	if (this.wind[0] < 0.001 || this.wind[0] > 0.001)
+		this.wind[0] -= this.wind[0] * this.damping;
+	if (this.wind[1] < 0.001 || this.wind[1] > 0.001)
+		this.wind[1] -= this.wind[1] * this.damping;
 
 	if (this.loc[1] > H + 50)
 	{
 		this.loc[1] = -50;
 	}
+	else if (this.loc[1] < -50)
+	{
+		this.loc[1] = H + 50;
+	}
+	if (this.loc[0] > W + 50)
+	{
+		this.loc[0] = -50;
+	}
+	else if (this.loc[0] < -50)
+	{
+		this.loc[0] = W + 50;
+	}
 
 	// update rotation
 	this.theta += this.rotSpeed;
+	this.velocity[0] = Math.sin(this.theta) * this.dir;
 };
 
 /*
@@ -42,12 +65,14 @@ Snowflake.prototype.render = function()
 	var y = this.loc[1];
 	var rot = this.theta;
 
-	context.translate(x, y);
-	context.rotate(rot);
 	this.drawSnowflake();
-	context.rotate(-rot);
-	context.translate(-x, -y);
-	this.drawDebugInfo();
+
+	//this.drawDebugInfo();
+};
+
+Snowflake.prototype.addWind = function(windVelocity)
+{
+	this.wind = windVelocity;
 };
 
 /*
@@ -55,21 +80,22 @@ Snowflake.prototype.render = function()
  */
 Snowflake.prototype.drawSnowflake = function()
 {
-	// make sure snowflake exists before drawing it
-	if (!this.points)
+	// calculate the current list of points based on the offset
+	var points = [];
+	for (var i = 0; i < this.offsets.length; i++)
 	{
-		return;
+		points.push([this.offsets[i][0] + this.loc[0], this.offsets[i][1] + this.loc[1]]);
 	}
 
 	context.beginPath();
-	context.moveTo(this.points[0][0], this.points[0][1]);
+	context.moveTo(points[0][0], points[0][1]);
 
-	for (var i = 1; i < this.points.length; i++)
+	for (var i = 1; i < points.length; i++)
 	{
-		context.lineTo(this.points[i][0], this.points[i][1]);
+		context.lineTo(points[i][0], points[i][1]);
 	}
 
-	context.lineTo(this.points[0][0], this.points[0][1]);
+	context.lineTo(points[0][0], points[0][1]);
 	context.fill();
 	context.stroke();
 
@@ -77,14 +103,19 @@ Snowflake.prototype.drawSnowflake = function()
 
 Snowflake.prototype.drawDebugInfo = function()
 {
+	var scale = 10;
+	var totalVelocity = [0, 0];
+	totalVelocity[0] = this.velocity[0] + this.wind[0];
+	totalVelocity[1] = this.velocity[1] + this.wind[1];
+	// draw x vector
+	context.strokeStyle = "#0000BB";
+	drawVector(this.loc, [this.loc[0] + totalVelocity[0] * scale, this.loc[1]]);
+	// draw y vector
 	context.strokeStyle = "#00BB00";
-	context.beginPath();
-	context.moveTo(this.loc[0], this.loc[1]);
-	context.lineTo(this.loc[0], this.loc[1] + this.speed * 50)
-	context.lineTo(this.loc[0] + 3, this.loc[1] + this.speed * 50 - 3);
-	context.moveTo(this.loc[0], this.loc[1] + this.speed * 50);
-	context.lineTo(this.loc[0] - 3, this.loc[1] + this.speed * 50 - 3);
-	context.stroke();
+	drawVector(this.loc, [this.loc[0], this.loc[1] + totalVelocity[1] * scale]);
+	// draw full vector
+	context.strokeStyle = "#BB0000";
+	drawVector(this.loc, [this.loc[0] + totalVelocity[0] * scale, this.loc[1] + totalVelocity[1] * scale]);
 };
 
 
@@ -98,7 +129,7 @@ Snowflake.prototype.generateSnowflake = function()
 	var radius = Math.sqrt(3)/6 * triSize; // radius of inscribed circle
 	var height = Math.sqrt(3)/2 * triSize; // height of triangle
 	var heightP = height - radius; // distance from center to vertex
-	var start = [0, heightP]; // starting point
+	var start = [0, -heightP]; // starting point
 	var point2 = [start[0] + triSize / 2, start[1] + height];
 	var point3 = [point2[0] - triSize, point2[1]];
 
@@ -112,14 +143,18 @@ Snowflake.prototype.generateSnowflake = function()
 		newPoints = [];	
 		for (var i = 0; i < points.length; i++)
 		{
+			var kochPoints;
 			if (i+1 >= points.length)
 			{
-				newPoints = newPoints.concat(this.kochRecurse(points[i], points[0]));
+				kochPoints = this.kochRecurse(points[i], points[0]);
 			}
 			else
 			{
-				newPoints = newPoints.concat(this.kochRecurse(points[i], points[i+1]));
+				kochPoints = this.kochRecurse(points[i], points[i+1]);
 			}
+			// remove last point to avoid duplicates
+			kochPoints = kochPoints.slice(0, kochPoints.length - 1);
+			newPoints = newPoints.concat(kochPoints);
 		}
 		points = newPoints.slice(0);
 		depth = depth - 1;

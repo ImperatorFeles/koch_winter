@@ -30,13 +30,12 @@ $(document).ready(function()
 
 function keyPressed(e)
 {
-	if (e.which == 187 && snowDepth < 5)
+	if (e.which == 'E'.charCodeAt(0))
 	{
-		snowDepth += 1;
-	}
-	else if (e.which == 189 && snowDepth > 0)
-	{
-		snowDepth -= 1;
+		for (var i = 0; i < snowflakes.length; i++)
+		{
+			snowflakes[i].addWind([Math.random() * 50 - 25, Math.random() * 50 - 25]);
+		}
 	}
 }
 
@@ -47,7 +46,7 @@ function loop()
 	drawBackground();
 
 	// add a new snowflake if we don't have enough and rng says we should
-	if (snowflakes.length < 50 && Math.random() * 100 < 2)
+	if (snowflakes.length < 100 && Math.random() * 100 < 9)
 	{
 		addSnowflake();
 	}
