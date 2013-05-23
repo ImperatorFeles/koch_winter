@@ -14,6 +14,16 @@ function drawRotated(x, y, rot, drawFunc)
 }
 
 /**
+ * Translates whatever is drawn in 'drawFunc' to (x, y)
+ */
+function drawTranslated(x, y, drawFunc)
+{
+	context.translate(x, y);
+	drawFunc();
+	context.translate(-x, -y);
+}
+
+/**
  * Draws a line from 'start' to 'end'
  */
 function drawLine(start, end)
