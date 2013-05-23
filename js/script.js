@@ -30,11 +30,18 @@ $(document).ready(function()
 
 function keyPressed(e)
 {
-	if (e.which == 'E'.charCodeAt(0))
+	if (e.which == 'W'.charCodeAt(0))
 	{
 		for (var i = 0; i < snowflakes.length; i++)
 		{
 			snowflakes[i].addWind([Math.random() * 50 - 25, Math.random() * 50 - 25]);
+		}
+	}
+	if (e.which == 'D'.charCodeAt(0))
+	{
+		for (var i = 0; i < snowflakes.length; i++)
+		{
+			snowflakes[i].toggleDebug();
 		}
 	}
 }

@@ -17,6 +17,7 @@ function Snowflake(startLoc, size, speed, rotSpeed, dir, depth)
 	this.velocity[1] = this.speed;
 	this.wind = [0, 0];
 	this.damping = 0.01; // damping factor so wind dies down
+	this.debug = false;
 }
 
 /*
@@ -67,7 +68,10 @@ Snowflake.prototype.render = function()
 
 	this.drawSnowflake();
 
-	//this.drawDebugInfo();
+	if (this.debug)
+	{
+		this.drawDebugInfo();
+	}
 };
 
 Snowflake.prototype.addWind = function(windVelocity)
@@ -204,4 +208,14 @@ Snowflake.prototype.kochRecurse = function(start, end)
 	points.push(end);
 
 	return points;
+};
+
+Snowflake.prototype.setDebug = function(debug)
+{
+	this.debug = debug;
+};
+
+Snowflake.prototype.toggleDebug = function()
+{
+	this.debug = !this.debug;
 };
