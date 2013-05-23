@@ -89,6 +89,16 @@ function generateRandomNormal()
 }
 
 /**
+ * Returns the cube root of the number x
+ */
+Math.cbrt = function(x)
+{
+	var sign = x === 0 ? 0 : x > 0 ? 1 : -1;
+
+	return sign * Math.pow(Math.abs(x), 1 / 3);
+}
+
+/**
  * Returns a random color
  */
 function randomColor()

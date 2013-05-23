@@ -74,9 +74,21 @@ Snowflake.prototype.render = function()
 	}
 };
 
+/**
+ * Sets the wind to be a specific value
+ */
+Snowflake.prototype.setWind = function(windVelocity)
+{
+	this.wind = windVelocity.slice(0);
+};
+
+/**
+ * Adds wind to the wind of the snowflake
+ */
 Snowflake.prototype.addWind = function(windVelocity)
 {
-	this.wind = windVelocity;
+	this.wind[0] += windVelocity[0];
+	this.wind[1] += windVelocity[1];
 };
 
 /*
@@ -100,7 +112,7 @@ Snowflake.prototype.drawSnowflake = function()
 		context.lineTo(points[i][0], points[i][1]);
 	}
 
-	context.lineTo(points[0][0], points[0][1]);
+	context.closePath();
 	context.fill();
 	context.stroke();
 
@@ -108,19 +120,21 @@ Snowflake.prototype.drawSnowflake = function()
 
 Snowflake.prototype.drawDebugInfo = function()
 {
-	var scale = 10;
+	var scale = 20;
 	var totalVelocity = [0, 0];
 	totalVelocity[0] = this.velocity[0] + this.wind[0];
 	totalVelocity[1] = this.velocity[1] + this.wind[1];
+	// we draw the vectors using cube roots to better show small and large values
 	// draw x vector
 	context.strokeStyle = "#0000BB";
-	drawVector(this.loc, [this.loc[0] + totalVelocity[0] * scale, this.loc[1]]);
+	drawVector(this.loc, [this.loc[0] + Math.cbrt(totalVelocity[0]) * scale  , this.loc[1]]);
 	// draw y vector
 	context.strokeStyle = "#00BB00";
-	drawVector(this.loc, [this.loc[0], this.loc[1] + totalVelocity[1] * scale]);
+	drawVector(this.loc, [this.loc[0], this.loc[1] + Math.cbrt(totalVelocity[1]) * scale]);
 	// draw full vector
 	context.strokeStyle = "#BB0000";
-	drawVector(this.loc, [this.loc[0] + totalVelocity[0] * scale, this.loc[1] + totalVelocity[1] * scale]);
+	drawVector(this.loc, [this.loc[0] + Math.cbrt(totalVelocity[0]) * scale, 
+					  this.loc[1] + Math.cbrt(totalVelocity[1]) * scale]);
 };
 
 
