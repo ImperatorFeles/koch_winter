@@ -64,13 +64,24 @@ function drawVector(start, end, arrowSize)
 }
 
 /**
+ * Rotates a point about the origin theta radians and returns
+ * the rotated point
+ */
+function rotatePoint(point, theta)
+{
+	var x = point[0] * Math.cos(theta) - point[1] * Math.sin(theta);
+	var y = point[0] * Math.sin(theta) + point[1] * Math.cos(theta);
+	return [x, y];
+}
+
+/**
  * Generates a random number on a normal distribution
  */
 function generateRandomNormal()
 {
-	// two random numbers
 	var U1 = Math.random();
 	var U2 = Math.random();
+
 	var c1 = Math.sqrt(-2 * Math.log(U1));
 	var c2 = Math.cos(2 * Math.PI * U2);
 

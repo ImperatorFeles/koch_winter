@@ -11,7 +11,7 @@ requestAnimFrame = (function(callback) {
 })();
 
 var canvas, context, W, H;
-var snowDepth = 1;
+var debug = false;
 
 $(document).ready(function()
 {
@@ -39,9 +39,10 @@ function keyPressed(e)
 	}
 	if (e.which == 'D'.charCodeAt(0))
 	{
+		debug = !debug;
 		for (var i = 0; i < snowflakes.length; i++)
 		{
-			snowflakes[i].toggleDebug();
+			snowflakes[i].setDebug(debug);
 		}
 	}
 }
@@ -101,24 +102,26 @@ function addSnowflake()
 	// randomize snowflake properties
 	var loc = [Math.random() * W, -50];
 	var size = Math.random() * 40 + 10;
-	var speed = Math.random() + 0.2;
+	var speed = Math.random() + 0.3;
 	var rotSpeed = Math.random() * 0.05 + 0.005;
 	var dir = Math.random() * 2 - 1;
-	var depth = Math.floor(generateRandomNormal() + 1.65);
+	var depth = Math.floor(generateRandomNormal() + 1.85);
 
 	// make sure depth was generated correctly
 	while (depth < 0 || depth > 4)
 	{
-		depth = Math.floor(generateRandomNormal() + 1.65);
+		depth = Math.floor(generateRandomNormal() + 1.85);
 	}
 
-	// make flakes besides 1 more rare
-	if (depth != 1 && Math.random() * 100 < 40)
+	// make flakes besides 1 and 2 more rare
+	if (depth != 1 && depth != 2 && Math.random() * 100 < 40)
 	{
 		depth = 1;
 	}
 
 	// create the snowflake
-	snowflakes.push(new Snowflake(loc, size, speed, rotSpeed, dir, depth));
+	var snowflake = new Snowflake(loc, size, speed, rotSpeed, dir, depth);
+	snowflake.setDebug(debug);
+	snowflakes.push(snowflake);
 }
 

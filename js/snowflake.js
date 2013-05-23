@@ -88,7 +88,8 @@ Snowflake.prototype.drawSnowflake = function()
 	var points = [];
 	for (var i = 0; i < this.offsets.length; i++)
 	{
-		points.push([this.offsets[i][0] + this.loc[0], this.offsets[i][1] + this.loc[1]]);
+		var rotated = rotatePoint(this.offsets[i], this.theta);
+		points.push([rotated[0] + this.loc[0], rotated[1] + this.loc[1]]);
 	}
 
 	context.beginPath();
