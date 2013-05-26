@@ -101,7 +101,7 @@ function loop()
 	drawBackground();
 
 	// add a new snowflake if we don't have enough and rng says we should
-	if (snowflakes.length < 100 && Math.random() * 100 < 8)
+	if (snowflakes.length < 1000 && Math.random() * 100 < 300)
 	{
 		addSnowflake();
 	}

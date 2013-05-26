@@ -96,6 +96,44 @@ Snowflake.prototype.addWind = function(windVelocity)
  */
 Snowflake.prototype.drawSnowflake = function()
 {
+	var cosTheta = Math.cos(this.theta);
+	var sinTheta = Math.sin(this.theta);
+
+	context.beginPath();
+
+	for (var i = 0; i < this.offsets.length; i++)
+	{
+		var point = [];
+		point[0] = this.offsets[i][0];
+		point[1] = this.offsets[i][1];
+
+		// rotate the point
+		point[0] = point[0] * cosTheta - point[1] * sinTheta;
+		point[1] = point[0] * sinTheta + point[1] * cosTheta;
+
+		// convert the offset to a location
+		point[0] += this.loc[0];
+		point[1] += this.loc[1];
+
+		// draw the point
+		// don't draw a line for the first point
+		if (i == 0)
+		{
+			context.moveTo(point[0], point[1]);
+		}
+		else
+		{
+			context.lineTo(point[0], point[1]);
+		}
+
+	}
+
+	context.closePath();
+	context.fill();
+	context.stroke();
+
+
+	/*
 	// calculate the current list of points based on the offset
 	var points = [];
 	for (var i = 0; i < this.offsets.length; i++)
@@ -115,7 +153,7 @@ Snowflake.prototype.drawSnowflake = function()
 	context.closePath();
 	context.fill();
 	context.stroke();
-
+	*/
 };
 
 Snowflake.prototype.drawDebugInfo = function()
