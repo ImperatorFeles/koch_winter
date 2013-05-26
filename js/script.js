@@ -10,13 +10,16 @@ requestAnimFrame = (function(callback) {
 	};
 })();
 
-var canvas, context, W, H;
-var debug = false;
-var snowflakes = [];
-var prevMousePos;
-var mouseDown = false;
-var wind = [0.0, 0.0];
-var maxWind = 50.0;
+
+var canvas, context, W, H; // drawing and screen info
+var debug = false; // flag to set debug mode
+var snowflakes = []; // the list of snowflakes
+var prevMousePos; // previous mouse location to calculate wind
+var mouseDown = false; // when or not the mouse button is pressed
+var wind = [0.0, 0.0]; // the global wind
+var maxWind = 500.0; // maximum wind in any direction
+var prevTime; // previous frame start time
+var currFps; // current frames per second
 
 $(document).ready(function()
 {
@@ -39,6 +42,8 @@ $(document).ready(function()
 			mouseDown = false; 
 		});
 
+	prevTime = new Date().getTime();
+
 	requestAnimFrame(loop);
 
 });
@@ -49,7 +54,7 @@ function keyPressed(e)
 	{
 		for (var i = 0; i < snowflakes.length; i++)
 		{
-			snowflakes[i].setWind([Math.random() * 50 - 25, Math.random() * 50 - 25]);
+			snowflakes[i].setWind([Math.random() * 500 - 250, Math.random() * 500 - 250]);
 		}
 	}
 	if (e.which == 'D'.charCodeAt(0))
@@ -79,11 +84,13 @@ function mouseMoved(e)
 	var dx = e.pageX - prevMousePos[0];
 	var dy = e.pageY - prevMousePos[1];
 
-	wind[0] += dx/10.0;
-	wind[1] += dy/10.0;
+	wind[0] += dx * 10;
+	wind[1] += dy * 10;
 
 	if (wind[0] > maxWind) wind[0] = maxWind;
+	else if (wind[0] < -maxWind) wind[0] = -maxWind;
 	if (wind[1] > maxWind) wind[1] = maxWind;
+	else if (wind[1] < -maxWind) wind[1] = -maxWind;
 
 	for (var i = 0; i < snowflakes.length; i++)
 	{
@@ -97,18 +104,28 @@ function mouseMoved(e)
 
 function loop()
 {
+	var date = new Date();
+	var time = date.getTime() - prevTime;
+	prevTime = date.getTime();
+	currFps = 1/(time/1000.0);
+
 	context.globalAlpha = 1.0;
 	drawBackground();
 
-	// add a new snowflake if we don't have enough and rng says we should
-	if (snowflakes.length < 1000 && Math.random() * 100 < 300)
+	// try to add snowflakes every 10 milliseconds
+	for (var i = 0; i < time % 10 + 1; i++)
 	{
-		addSnowflake();
+		// add a new snowflake if we don't have enough and rng says we should
+		if (snowflakes.length < 300 && Math.random() * 100 < 2)
+		{
+			addSnowflake();
+		}
 	}
+
 	// update the snowflakes
 	for (var i = 0; i < snowflakes.length; i ++)
 	{
-		snowflakes[i].update();
+		snowflakes[i].update(time);
 	}
 
 	// draw the snowflakes
@@ -166,6 +183,7 @@ function drawDebugInfo()
 	context.font = "20px Arial";
 	context.fillText("Count = " + snowflakes.length, 20, H - 90);
 	context.fillText("Average Depth = " + averageDepth.toFixed(3), 20, H - 70);
+	context.fillText("Fps = " + currFps.toFixed(3), 20, H - 50);
 }
 
 /*
@@ -177,8 +195,8 @@ function addSnowflake()
 	// randomize snowflake properties
 	var loc = [Math.random() * W, -50];
 	var size = Math.random() * 40 + 10;
-	var speed = Math.random() + 0.3;
-	var rotSpeed = Math.random() * 0.05 + 0.005;
+	var speed = Math.random() * 70 + 50;
+	var rotSpeed = Math.random() * 3 + 1;
 	var dir = Math.random() * 2 - 1;
 	var depth = Math.floor(generateRandomNormal() + 1.85);
 

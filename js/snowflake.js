@@ -24,11 +24,11 @@ function Snowflake(startLoc, size, speed, rotSpeed, dir, depth)
  * Updates the snowflake's position based on the direction,
  * the velocity, and the rotational velocity
  */
-Snowflake.prototype.update = function()
+Snowflake.prototype.update = function(time)
 {
 	// update position
-	this.loc[0] += this.velocity[0] + this.wind[0];
-	this.loc[1] += this.velocity[1] + this.wind[1];
+	this.loc[0] += (time / 1000.0) * (this.velocity[0] + this.wind[0]);
+	this.loc[1] += (time / 1000.0) * (this.velocity[1] + this.wind[1]);
 
 	if (this.wind[0] < 0.001 || this.wind[0] > 0.001)
 		this.wind[0] -= this.wind[0] * this.damping;
@@ -53,8 +53,8 @@ Snowflake.prototype.update = function()
 	}
 
 	// update rotation
-	this.theta += this.rotSpeed;
-	this.velocity[0] = Math.sin(this.theta) * this.dir;
+	this.theta += this.rotSpeed * (time / 1000.0);
+	this.velocity[0] = 50 * Math.sin(this.theta) * this.dir;
 };
 
 /*
@@ -108,8 +108,8 @@ Snowflake.prototype.drawSnowflake = function()
 		point[1] = this.offsets[i][1];
 
 		// rotate the point
-		point[0] = point[0] * cosTheta - point[1] * sinTheta;
-		point[1] = point[0] * sinTheta + point[1] * cosTheta;
+		point[0] = this.offsets[i][0] * cosTheta - this.offsets[i][1] * sinTheta;
+		point[1] = this.offsets[i][0] * sinTheta + this.offsets[i][1] * cosTheta;
 
 		// convert the offset to a location
 		point[0] += this.loc[0];
@@ -165,14 +165,16 @@ Snowflake.prototype.drawDebugInfo = function()
 	// we draw the vectors using cube roots to better show small and large values
 	// draw x vector
 	context.strokeStyle = "#0000BB";
-	drawVector(this.loc, [this.loc[0] + Math.cbrt(totalVelocity[0]) * scale  , this.loc[1]]);
+	context.fillStyle = "#0000BB";
+	drawVector(this.loc, [this.loc[0] + totalVelocity[0], this.loc[1]], true);
 	// draw y vector
 	context.strokeStyle = "#00BB00";
-	drawVector(this.loc, [this.loc[0], this.loc[1] + Math.cbrt(totalVelocity[1]) * scale]);
+	context.fillStyle = "#00BB00";
+	drawVector(this.loc, [this.loc[0], this.loc[1] + totalVelocity[1]], true);
 	// draw full vector
 	context.strokeStyle = "#BB0000";
-	drawVector(this.loc, [this.loc[0] + Math.cbrt(totalVelocity[0]) * scale, 
-					  this.loc[1] + Math.cbrt(totalVelocity[1]) * scale]);
+	context.fillStyle = "#BB0000";
+	drawVector(this.loc, [this.loc[0] + totalVelocity[0], this.loc[1] + totalVelocity[1]], true);
 };
 
 

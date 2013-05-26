@@ -37,10 +37,12 @@ function drawLine(start, end)
 /**
  * Draws a vector from start to end as an arrow
  */
-function drawVector(start, end, arrowSize)
+function drawVector(start, end, drawMag)
 {
 	// default arrow size
-	arrowSize = arrowSize || 5;
+	var arrowSize = 5;
+	// default drawing magnitude off
+	drawMag = drawMag || false;
 
 	var dx = end[0] - start[0];
 	var dy = -(end[1] - start[1]);
@@ -60,6 +62,17 @@ function drawVector(start, end, arrowSize)
 	context.moveTo(end[0], end[1]);
 	context.lineTo(tip2[0], tip2[1]);
 	context.stroke();
+
+	
+	if (drawMag)
+	{
+		var mag = Math.sqrt(dx * dx + dy * dy);
+		var center = [start[0] + dx / 2.0, start[1] - dy / 2.0];
+
+		context.font = "10px Arial";
+		context.fillText(mag.toFixed(1), center[0], center[1]);
+	}
+	
 
 }
 
