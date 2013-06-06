@@ -47,8 +47,8 @@ Snowflake.prototype.update = function(time)
 	}
 
 	// update rotation
-	this.theta += this.rotSpeed * (time / 1000.0);
-	this.velocity[0] = 50 * Math.sin(this.theta) * this.dir;
+	this.theta += (this.rotSpeed + this.wind[1] / 200 + Math.random()) * (time / 1000.0);
+	this.velocity[0] = 100 * Math.sin(this.theta) * this.dir;
 };
 
 /*

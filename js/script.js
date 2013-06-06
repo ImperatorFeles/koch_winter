@@ -48,8 +48,17 @@ $(document).ready(function()
 
 });
 
+$(window).resize(function()
+{
+	W = window.innerWidth;
+	H = window.innerHeight;
+	canvas.width = W;
+	canvas.height = H;
+});
+
 function keyPressed(e)
 {
+	// random wind
 	if (e.which == 'W'.charCodeAt(0))
 	{
 		for (var i = 0; i < snowflakes.length; i++)
@@ -57,6 +66,7 @@ function keyPressed(e)
 			snowflakes[i].setWind([Math.random() * 500 - 250, Math.random() * 500 - 250]);
 		}
 	}
+	// debug mode
 	if (e.which == 'D'.charCodeAt(0))
 	{
 		debug = !debug;
@@ -217,6 +227,25 @@ function addSnowflake()
 		snowflake.setWind(snowflakes[snowflakes.length-1].wind);
 	}
 
+	
+	// don't bother searching if there aren't any in list
+	if (snowflakes.length == 0)
+	{
+		snowflakes.push(snowflake);
+		return;
+	}
+
+	// insert snowflake to keep order of snowflakes
+	for (var i = 0; i < snowflakes.length; i++)
+	{
+		if (snowflakes[i].size > snowflake.size)
+		{
+			snowflakes.splice(i, 0, snowflake);
+			return;
+		}
+	}
+
+	// biggest snowflake, put it at the end
 	snowflakes.push(snowflake);
 }
 
