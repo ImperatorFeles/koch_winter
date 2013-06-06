@@ -122,6 +122,14 @@ function randomColor()
 }
 
 /**
+ * Generates a color based on r, g, b
+ */
+function generateColor(r, g, b)
+{
+	return "rgb(" + r + "," + g + "," + b + ")";
+}
+
+/**
  * Returns a partial function with 'args' arguments
  */
 function partial(func /*, 0..n args */) {

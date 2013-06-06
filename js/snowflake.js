@@ -18,6 +18,8 @@ function Snowflake(startLoc, size, speed, rotSpeed, dir, depth)
 	this.wind = [0, 0];
 	this.damping = 0.01; // damping factor so wind dies down
 	this.debug = false;
+	this.blue = Math.floor(Math.random() * 20);
+	this.strokeColor = 155 - Math.floor(size * 3);
 }
 
 /*
@@ -93,6 +95,9 @@ Snowflake.prototype.drawSnowflake = function()
 	var cosTheta = Math.cos(this.theta);
 	var sinTheta = Math.sin(this.theta);
 
+	context.fillStyle = generateColor(255 - this.blue, 255 - this.blue, 255);
+	context.strokeStyle = generateColor(this.strokeColor, this.strokeColor, this.strokeColor);
+
 	context.beginPath();
 
 	for (var i = 0; i < this.offsets.length; i++)
@@ -125,29 +130,6 @@ Snowflake.prototype.drawSnowflake = function()
 	context.closePath();
 	context.fill();
 	context.stroke();
-
-
-	/*
-	// calculate the current list of points based on the offset
-	var points = [];
-	for (var i = 0; i < this.offsets.length; i++)
-	{
-		var rotated = rotatePoint(this.offsets[i], this.theta);
-		points.push([rotated[0] + this.loc[0], rotated[1] + this.loc[1]]);
-	}
-
-	context.beginPath();
-	context.moveTo(points[0][0], points[0][1]);
-
-	for (var i = 1; i < points.length; i++)
-	{
-		context.lineTo(points[i][0], points[i][1]);
-	}
-
-	context.closePath();
-	context.fill();
-	context.stroke();
-	*/
 };
 
 Snowflake.prototype.drawDebugInfo = function()

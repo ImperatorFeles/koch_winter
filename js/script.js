@@ -136,7 +136,6 @@ function loop()
 	// draw the snowflakes
 	for (var i = 0; i < snowflakes.length; i ++)
 	{
-		context.fillStyle = "white";
 		context.strokeStyle = "black";
 		context.globalAlpha = 0.8;
 		context.lineWidth = 1;
