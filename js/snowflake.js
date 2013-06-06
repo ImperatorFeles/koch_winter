@@ -27,29 +27,23 @@ function Snowflake(startLoc, size, speed, rotSpeed, dir, depth)
 Snowflake.prototype.update = function(time)
 {
 	// update position
-	this.loc[0] += (time / 1000.0) * (this.velocity[0] + this.wind[0]);
-	this.loc[1] += (time / 1000.0) * (this.velocity[1] + this.wind[1]);
+	this.loc[0] += (time / 1000.0) * (this.velocity[0] + this.wind[0]) * this.size / 50;
+	this.loc[1] += (time / 1000.0) * (this.velocity[1] + this.wind[1]) * this.size / 50;
 
 	if (this.wind[0] < 0.001 || this.wind[0] > 0.001)
 		this.wind[0] -= this.wind[0] * this.damping;
 	if (this.wind[1] < 0.001 || this.wind[1] > 0.001)
 		this.wind[1] -= this.wind[1] * this.damping;
 
-	if (this.loc[1] > H + 50)
+	// bring snowflake to other side of screen outside of screen\
+	// in a way proportional to how far out it is
+	if (this.loc[1] > H + 50 || this.loc[1] < -50)
 	{
-		this.loc[1] = -50;
+		this.loc[1] = -(this.loc[1] - H);
 	}
-	else if (this.loc[1] < -50)
+	if (this.loc[0] > W + 50 || this.loc[0] < -50)
 	{
-		this.loc[1] = H + 50;
-	}
-	if (this.loc[0] > W + 50)
-	{
-		this.loc[0] = -50;
-	}
-	else if (this.loc[0] < -50)
-	{
-		this.loc[0] = W + 50;
+		this.loc[0] = -(this.loc[0] - W);
 	}
 
 	// update rotation
@@ -249,7 +243,6 @@ Snowflake.prototype.kochRecurse = function(start, end)
 
 	// sign correction if we are going right, else triangle will point wrong way
 	var sign = dx < 0 ? -1 : 1;
-	//sign *= (Math.random() * 2 - 1);
 
 	var tip = [segmentCenter[0] + sign * Math.sin(angle) * tipHeight, 
 	    		 segmentCenter[1] - sign * Math.cos(angle) * tipHeight];

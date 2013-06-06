@@ -84,13 +84,8 @@ function mouseMoved(e)
 	var dx = e.pageX - prevMousePos[0];
 	var dy = e.pageY - prevMousePos[1];
 
-	wind[0] += dx * 10;
-	wind[1] += dy * 10;
-
-	if (wind[0] > maxWind) wind[0] = maxWind;
-	else if (wind[0] < -maxWind) wind[0] = -maxWind;
-	if (wind[1] > maxWind) wind[1] = maxWind;
-	else if (wind[1] < -maxWind) wind[1] = -maxWind;
+	wind[0] += dx * 2;
+	wind[1] += dy * 2;
 
 	for (var i = 0; i < snowflakes.length; i++)
 	{
