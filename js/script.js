@@ -58,6 +58,7 @@ $(window).resize(function()
 
 function keyPressed(e)
 {
+	/*
 	// random wind
 	if (e.which == 'W'.charCodeAt(0))
 	{
@@ -75,6 +76,7 @@ function keyPressed(e)
 			snowflakes[i].setDebug(debug);
 		}
 	}
+	*/
 }
 
 function mouseMoved(e)
@@ -157,8 +159,8 @@ function drawBackground()
 {
 	var gradient = context.createLinearGradient(0, 0, 0, H);
 
-	gradient.addColorStop(0.0, "#999999");
-	gradient.addColorStop(0.1, "#CCCCCC");
+	gradient.addColorStop(0.0, "#666666");
+	gradient.addColorStop(0.1, "#AAAAAA");
 	gradient.addColorStop(0.4, "#E0E0E0");
 	context.fillStyle = gradient;
 	context.fillRect(0, 0, W, H);
